@@ -3,6 +3,10 @@ import cors from 'cors';
 import userRoutes from '../routes/user.route';
 import db from '../db/connection';
 
+import './user.model';
+import './group.model';
+import './payment.model';
+
 class Server {
   private app: Application;
   private port: string;
@@ -22,15 +26,13 @@ class Server {
 
   async dbConnection() {
     try {
-      await db.authenticate();
+      await db.sync();
       console.log('Database is online');
     } catch (err) {
       console.log(err);
       throw new Error(err);
     }
   }
-
-  // TODO: Connect to database
 
   middlewares() {
     // Cors

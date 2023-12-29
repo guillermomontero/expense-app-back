@@ -1,30 +1,119 @@
 import { Request, Response } from 'express';
+import User from '../models/user.model';
 
-export const getUsers = (req: Request, res: Response) => {
-  res.json({ msg: 'getUsers' });
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.findAll();
+
+    res.json({
+      code: 1,
+      msg: '',
+      users
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 3,
+      msg: 'An error ocurred',
+    });
+  }
 };
 
-export const getUser = (req: Request, res: Response) => {
+export const getAllActiveUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.findAll({ where: { active: true } });
+
+    res.json({
+      code: 1,
+      msg: '',
+      users
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 3,
+      msg: 'An error ocurred',
+    });
+  }
+};
+
+export const getUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  res.json({ msg: 'getUsers', id });
+  try {
+    const user = await User.findByPk(id);
+
+    res.json({
+      code: 1,
+      msg: '',
+      user
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 3,
+      msg: 'An error ocurred',
+    });
+  }
 };
 
-export const createUser = (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response) => {
   const { body } = req;
 
-  res.json({ msg: 'createUser', body });
+  try {
+    const user = await User.create(body);
+
+    res.json({
+      code: 1,
+      msg: '',
+      user
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 3,
+      msg: 'An error ocurred',
+    });
+  }
 };
 
-export const updateUser = (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { body } = req;
 
-  res.json({ msg: 'updateUser', body, id });
+  try {
+    const user = await User.findByPk(id);
+    if (!user) return res.json({ code: 2, msg: 'User not exists' });
+
+    await user.update(body);
+
+    res.json({
+      code: 1,
+      msg: '',
+      user
+    });
+  } catch (err) {
+    res.status(500).json({
+      code: 3,
+      msg: 'An error ocurred',
+    });
+  }
 };
 
-export const deleteUser = (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  res.json({ msg: 'deleteUser', id });
+  try {
+    const user = await User.findByPk(id);
+    if (!user) return res.json({ code: 2, msg: 'User not exists' });
+
+    await user.update({ active: false });
+
+    res.json({
+      code: 1,
+      msg: '',
+      user
+    });
+  } catch (err) {
+    res.status(500).json({
+      code: 3,
+      msg: 'An error ocurred',
+    });
+  }
 };
